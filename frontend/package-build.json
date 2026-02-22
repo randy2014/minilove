@@ -1,0 +1,19 @@
+{
+  "name": "minilove-frontend-simple",
+  "version": "0.1.0",
+  "description": "MiniLove 前端简易构建版本",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=8080",
+    "build": "echo '构建完成 - 静态HTML版本'",
+    "dev": "live-server --port=8080 --watch=.",
+    "test": "echo '前端简易版本，无需构建'"
+  },
+  "keywords": ["minilove", "情感支持", "前端"],
+  "author": "啊涯 & AI架构师",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "type": "module"
+}
