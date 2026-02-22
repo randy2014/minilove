@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLove API 测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+        }
+        
+        .btn-secondary {
+            background: #2196F3;
+        }
+        
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+        }
+        
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        
+        .api-section {
+            margin-top: 15px;
+        }
+        
+        .api-endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .api-method {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #2196F3;
+            color: white;
+            border-radius: 3px;
+            font-weight: bold;
+            font-family: monospace;
+            margin-right: 10px;
+        }
+        
+        .api-url {
+            font-family: monospace;
+            color: #666;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            max-height: 300px;
+            overflow: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .auth-token {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
+        
+        .user-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .login-form {
+            display: grid;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .post-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .post-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .post-content {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        
+        .post-meta {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .post-tags {
+            margin-top: 10px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MiniLove API 测试平台</h1>
+            <p>项目名称：情感支持社区 | 当前时间：<span id="currentTime"></span></p>
+        </div>
+        
+        <div class="card">
+            <h2>📡 API 健康状态</h2>
+            <button class="btn" onclick="testHealth()">测试健康检查</button>
+            <div id="healthResult" class="result"></div>
+        </div>
+        
+        <div class="card">
+            <h2>👤 用户认证</h2>
+            <div class="api-section">
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-url">/api/v1/auth/login</span>
+                </div>
+                
+                <div class="login-form">
+                    <div>
+                        <label>选择测试账户：</label>
+                        <button class="btn btn-secondary" onclick="setTestUser('test_user')">免费会员 (test_user)</button>
+                        <button class="btn btn-secondary" onclick="setTestUser('premium_user')">高级会员 (premium_user)</button>
+                    </div>
+                    
+                    <div>
+                        <label for="username">用户名/邮箱：</label>
+                        <input type="text" id="username" value="test_user" placeholder="用户名或邮箱">
+                    </div>
+                    
+                    <div>
+                        <label for="password">密码：</label>
+                        <input type="password" id="password" value="test123" placeholder="密码">
+                    </div>
+                    
+                    <button class="btn" onclick="login()">登录</button>
+                </div>
+                
+                <div id="loginResult" class="result"></div>
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <h3>当前用户信息</h3>
+                    <div id="currentUser"></div>
+                    <div id="tokenInfo" class="auth-token"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📝 帖子管理</h2>
+            <div class="api-section">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-url">/api/v1/posts</span>
+                </div>
+                <button class="btn" onclick="getPosts()">获取帖子列表</button>
+                <button class="btn btn-secondary" onclick="getFeaturedPosts()">获取推荐帖子</button>
+                
+                <div id="postsResult" class="result"></div>
+            </div>
+            
+            <div class="api-section" id="createPostSection" style="display: none;">
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-url">/api/v1/posts</span>
+                </div>
+                
+                <div class="login-form">
+                    <input type="text" id="postTitle" placeholder="帖子标题">
+                    <textarea id="postContent" placeholder="帖子内容..." rows="3"></textarea>
+                    <button class="btn" onclick="createPost()">创建帖子</button>
+                </div>
+                
+                <div id="createPostResult" class="result"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>💬 评论系统</h2>
+            <div class="api-section">
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-url">/api/v1/comments</span>
+                </div>
+                
+                <div class="login-form" id="createCommentSection" style="display: none;">
+                    <input type="number" id="commentPostId" placeholder="帖子ID">
+                    <textarea id="commentContent" placeholder="评论内容..." rows="2"></textarea>
+                    <button class="btn" onclick="createComment()">创建评论</button>
+                </div>
+                
+                <div id="commentResult" class="result"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📊 系统信息</h2>
+            <button class="btn" onclick="getDebugData()">获取调试数据</button>
+            <div id="debugResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        let currentToken = null;
+        let currentUser = null;
+        
+        // 更新时间显示
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleString('zh-CN', { 
+                    timeZone: 'Asia/Shanghai',
+                    hour12: false 
+                });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // 显示结果
+        function showResult(elementId, data, status = 'success') {
+            const element = document.getElementById(elementId);
+            const statusText = status === 'success' ? '✅ 成功' : '❌ 失败';
+            element.innerHTML = `
+                <div class="status status-${status}">${statusText}</div>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+        
+        // 测试健康检查
+        async function testHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                showResult('healthResult', data);
+            } catch (error) {
+                showResult('healthResult', { error: error.message }, 'error');
+            }
+        }
+        
+        // 设置测试用户
+        function setTestUser(username) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = 'test123';
+        }
+        
+        // 用户登录
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentToken = data.token;
+                    currentUser = data.user;
+                    
+                    showResult('loginResult', data);
+                    
+                    // 显示用户信息
+                    document.getElementById('userInfo').style.display = 'block';
+                    document.getElementById('currentUser').innerHTML = `
+                        <p><strong>用户名：</strong>${currentUser.username}</p>
+                        <p><strong>邮箱：</strong>${currentUser.email}</p>
+                        <p><strong>会员等级：</strong>${currentUser.membershipLevel}</p>
+                    `;
+                    
+                    document.getElementById('tokenInfo').textContent = currentToken;
+                    
+                    // 显示创建帖子区域
+                    document.getElementById('createPostSection').style.display = 'block';
+                    document.getElementById('createCommentSection').style.display = 'block';
+                    
+                    // 自动获取帖子
+                    setTimeout(() => getPosts(), 500);
+                } else {
+                    showResult('loginResult', data, 'error');
+                }
+            } catch (error) {
+                showResult('loginResult', { error: error.message }, 'error');
+            }
+        }
+        
+        // 获取帖子列表
+        async function getPosts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/posts`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('postsResult', data);
+                    
+                    // 渲染帖子列表
+                    const postsContainer = document.createElement('div');
+                    postsContainer.innerHTML = '<h3>帖子列表：</h3>';
+                    
+                    data.posts.forEach(post => {
+                        const postElement = document.createElement('div');
+                        postElement.className = 'post-item';
+                        postElement.innerHTML = `
+                            <div class="post-title">${post.title || '无标题'}</div>
+                            <div class="post-content">${post.content}</div>
+                            <div class="post-meta">
+                                <span>作者：${post.author_username}</span>
+                                <span>👍 ${post.likes_count}</span>
+                                <span>💬 ${post.comments_count}</span>
+                                <span>👁️ ${post.views_count}</span>
+                            </div>
+                            <div class="post-tags">
+                                ${(post.tags || []).map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                            </div>
+                        `;
+                        postsContainer.appendChild(postElement);
+                    });
+                    
+                    document.getElementById('postsResult').appendChild(postsContainer);
+                } else {
+                    showResult('postsResult', data, 'error');
+                }
+            } catch (error) {
+                showResult('postsResult', { error: error.message }, 'error');
+            }
+        }
+        
+        // 获取推荐帖子
+        async function getFeaturedPosts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/posts?limit=3`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('postsResult', data);
+                } else {
+                    showResult('postsResult', data, 'error');
+                }
+            } catch (error) {
+                showResult('postsResult', { error: error.message }, 'error');
+            }
+        }
+        
+        // 创建帖子
+        async function createPost() {
+            if (!currentToken) {
+                alert('请先登录');
+                return;
+            }
+            
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            
+            if (!content) {
+                alert('请输入帖子内容');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        title: title || '无标题',
+                        content,
+                        category: '情感倾诉',
+                        tags: ['测试', '新帖子']
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('createPostResult', data);
+                    // 清空表单
+                    document.getElementById('postTitle').value = '';
+                    document.getElementById('postContent').value = '';
+                    // 刷新帖子列表
+                    setTimeout(() => getPosts(), 500);
+                } else {
+                    showResult('createPostResult', data, 'error');
+                }
+            } catch (error) {
+                showResult('createPostResult', { error: error.message }, 'error');
+            }
+        }
+        
+        // 创建评论
+        async function createComment() {
+            if (!currentToken) {
+                alert('请先登录');
+                return;
+            }
+            
+            const postId = document.getElementById('commentPostId').value;
+            const content = document.getElementById('commentContent').value;
+            
+            if (!postId || !content) {
+                alert('请填写帖子ID和评论内容');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        postId: parseInt(postId),
+                        content
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('commentResult', data);
+                    // 清空表单
+                    document.getElementById('commentPostId').value = '';
+                    document.getElementById('commentContent').value = '';
+                } else {
+                    showResult('commentResult', data, 'error');
+                }
+            } catch (error) {
+                showResult('commentResult', { error: error.message }, 'error');
+            }
+        }
+        
+        // 获取调试数据
+        async function getDebugData() {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/debug/data`);
+                const data = await response.json();
+                showResult('debugResult', data);
+            } catch (error) {
+                showResult('debugResult', { error: error.message }, 'error');
+            }
+        }
+        
+        // 页面加载时自动测试健康检查
+        window.onload = function() {
+            setTimeout(testHealth, 500);
+        };
+    </script>
+</body>
+</html>

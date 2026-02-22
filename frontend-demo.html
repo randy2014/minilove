@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLove 项目演示</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans SC', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .emoji { font-size: 1.5rem; }
+        .topic-badge { background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); }
+        .emotion-badge { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); }
+        .dark-theme { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-heart text-2xl"></i>
+                    <span class="text-2xl font-bold">MiniLove</span>
+                    <span class="text-sm bg-white/20 px-2 py-1 rounded">情感支持社区</span>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#home" class="hover:text-gray-200 transition">首页</a>
+                    <a href="#features" class="hover:text-gray-200 transition">功能</a>
+                    <a href="#api" class="hover:text-gray-200 transition">API</a>
+                    <a href="#status" class="hover:text-gray-200 transition">状态</a>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="login-btn" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition">
+                        <i class="fas fa-sign-in-alt mr-2"></i>登录
+                    </button>
+                    <button id="dark-toggle" class="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 项目状态展示 -->
+        <section id="status" class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-chart-line text-purple-600 mr-3"></i>项目部署状态
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- 后端状态 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-l-4 border-green-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">后端API服务</h3>
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium" id="backend-status">运行中</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-server text-blue-500 mr-3"></i>
+                            <span>端口: <code class="bg-gray-100 px-2 py-1 rounded">3000</code></span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-code text-purple-500 mr-3"></i>
+                            <span>API路径: <code class="bg-gray-100 px-2 py-1 rounded">/api/v1</code></span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-database text-green-500 mr-3"></i>
+                            <span>数据: <span class="text-green-600 font-medium">模拟数据</span></span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="http://localhost:3000/health" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                            <i class="fas fa-external-link-alt mr-2"></i>健康检查
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 数据库状态 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">数据状态</h3>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">模拟</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span>用户数</span>
+                            <span class="font-bold" id="user-count">2</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>帖子数</span>
+                            <span class="font-bold" id="post-count">3</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>评论数</span>
+                            <span class="font-bold" id="comment-count">2</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>话题数</span>
+                            <span class="font-bold" id="topic-count">3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 开发进度 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">开发进度</h3>
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">40%</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm">后端框架</span>
+                                <span class="text-sm font-bold">70%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm">前端原型</span>
+                                <span class="text-sm font-bold">10%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 10%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm">数据库</span>
+                                <span class="text-sm font-bold">60%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API功能演示 -->
+        <section id="api" class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-code text-blue-600 mr-3"></i>API功能演示
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 帖子列表展示 -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-newspaper text-red-500 mr-2"></i>社区帖子
+                    </h3>
+                    <div class="space-y-4" id="posts-container">
+                        <!-- 帖子会通过JS加载 -->
+                        <div class="text-center py-8">
+                            <i class="fas fa-spinner fa-spin text-3xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-500">正在加载帖子...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 话题展示 -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-comments text-green-500 mr-2"></i>热门话题
+                    </h3>
+                    <div class="space-y-4" id="topics-container">
+                        <!-- 话题会通过JS加载 -->
+                        <div class="text-center py-8">
+                            <i class="fas fa-spinner fa-spin text-3xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-500">正在加载话题...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技术栈展示 -->
+        <section id="features" class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-cogs text-orange-600 mr-3"></i>技术架构
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 前端技术 -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-desktop text-blue-600 text-3xl mr-4"></i>
+                        <h3 class="text-xl font-bold text-gray-800">前端技术栈</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>Vue 3</strong> - 现代前端框架</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>Vite</strong> - 快速构建工具</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>Tailwind CSS</strong> - UI框架</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>PWA</strong> - 渐进式Web应用</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 后端技术 -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-server text-green-600 text-3xl mr-4"></i>
+                        <h3 class="text-xl font-bold text-gray-800">后端技术栈</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>Node.js</strong> - 运行时环境</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>Express.js</strong> - Web框架</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-yellow-500 mr-2"></i>
+                            <span><strong>PostgreSQL</strong> - 数据库</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-yellow-500 mr-2"></i>
+                            <span><strong>Redis</strong> - 缓存</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 部署架构 -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-rocket text-purple-600 text-3xl mr-4"></i>
+                        <h3 class="text-xl font-bold text-gray-800">部署架构</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>Docker</strong> - 容器化</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span><strong>Nginx</strong> - 反向代理</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-yellow-500 mr-2"></i>
+                            <span><strong>CI/CD</strong> - 自动化部署</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-yellow-500 mr-2"></i>
+                            <span><strong>监控系统</strong> - 运维监控</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 测试账户 -->
+        <section class="mb-12">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl shadow-lg p-8 text-white">
+                <h3 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-users mr-3"></i>测试账户
+                </h3>
+                <p class="mb-6">项目已内置测试账户，可直接体验API功能</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-user text-yellow-300 mr-3"></i>
+                            <span class="font-bold">免费会员</span>
+                        </div>
+                        <p class="mb-2">用户名: <code class="bg-white/30 px-2 py-1 rounded">test_user</code></p>
+                        <p>密码: <code class="bg-white/30 px-2 py-1 rounded">test123</code></p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-crown text-yellow-300 mr-3"></i>
+                            <span class="font-bold">高级会员</span>
+                        </div>
+                        <p class="mb-2">用户名: <code class="bg-white/30 px-2 py-1 rounded">premium_user</code></p>
+                        <p>密码: <code class="bg-white/30 px-2 py-1 rounded">test123</code></p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <a href="http://localhost:3000/api-docs" target="_blank" class="inline-flex items-center bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition">
+                        <i class="fas fa-book-open mr-2"></i>查看完整API文档
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="dark-theme text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-heart text-2xl text-pink-400 mr-3"></i>
+                        <span class="text-2xl font-bold">MiniLove</span>
+                    </div>
+                    <p class="text-gray-300">面向18-45岁男性的情感支持社区</p>
+                    <p class="text-gray-400 text-sm mt-2">当前状态: MVP开发阶段 v0.1.0</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-gray-300 mb-2">产品负责人: 啊涯</p>
+                    <p class="text-gray-300 mb-2">技术架构: AI架构师</p>
+                    <p class="text-gray-400 text-sm">© 2026 MiniLove项目. 当前时间: <span id="current-time"></span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 更新时间
+            function updateTime() {
+                const now = new Date();
+                document.getElementById('current-time').textContent = now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // 黑暗模式切换
+            document.getElementById('dark-toggle').addEventListener('click', function() {
+                document.body.classList.toggle('bg-gray-900');
+                document.body.classList.toggle('text-gray-100');
+                const sections = document.querySelectorAll('section, div.bg-white');
+                sections.forEach(el => {
+                    el.classList.toggle('bg-gray-800');
+                    el.classList.toggle('text-gray-100');
+                });
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-moon')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+
+            // 加载帖子
+            async function loadPosts() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/v1/posts');
+                    const data = await response.json();
+                    
+                    const container = document.getElementById('posts-container');
+                    container.innerHTML = '';
+                    
+                    data.posts.slice(0, 3).forEach(post => {
+                        const postElement = document.createElement('div');
+                        postElement.className = 'border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition';
+                        postElement.innerHTML = `
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-lg text-gray-800">${post.title}</h4>
+                                <span class="text-xs text-gray-500">${new Date(post.created_at).toLocaleDateString('zh-CN')}</span>
+                            </div>
+                            <p class="text-gray-600 mb-3 line-clamp-2">${post.content}</p>
+                            <div class="flex flex-wrap gap-1 mb-3">
+                                ${post.tags.map(tag => 
+                                    `<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">${tag}</span>`
+                                ).join('')}
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-500">
+                                <div class="flex items-center">
+                                    <i class="fas fa-user mr-1"></i>
+                                    <span>${post.author_username}</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span><i class="fas fa-heart mr-1"></i>${post.likes_count}</span>
+                                    <span><i class="fas fa-comment mr-1"></i>${post.comments_count}</span>
+                                    <span><i class="fas fa-eye mr-1"></i>${post.views_count}</span>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(postElement);
+                    });
+                    
+                    // 更新统计数据
+                    document.getElementById('post-count').textContent = data.posts.length;
+                } catch (error) {
+                    console.error('加载帖子失败:', error);
+                    document.getElementById('posts-container').innerHTML = `
+                        <div class="text-center py-8 text-red-500">
+                            <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+                            <p>加载失败，请确保后端服务正在运行</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // 加载话题
+            async function loadTopics() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/v1/topics');
+                    const data = await response.json();
+                    
+                    const container = document.getElementById('topics-container');
+                    container.innerHTML = '';
+                    
+                    data.topics.forEach(topic => {
+                        const topicElement = document.createElement('div');
+                        topicElement.className = 'bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4';
+                        topicElement.innerHTML = `
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-lg text-purple-800">${topic.name}</h4>
+                                <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">热门</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">${topic.description}</p>
+                            <div class="flex justify-between text-sm text-gray-500">
+                                <span><i class="fas fa-newspaper mr-1"></i>${topic.posts_count} 个帖子</span>
+                                <span><i class="fas fa-users mr-1"></i>${topic.participants_count} 人参与</span>
+                            </div>
+                        `;
+                        container.appendChild(topicElement);
+                    });
+                    
+                    // 更新统计数据
+                    document.getElementById('topic-count').textContent = data.topics.length;
+                } catch (error) {
+                    console.error('加载话题失败:', error);
+                }
+            }
+
+            // 更新统计数据
+            async function updateStats() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/v1/debug/data');
+                    const data = await response.json();
+                    
+                    document.getElementById('user-count').textContent = data.users.length;
+                    document.getElementById('post-count').textContent = data.posts;
+                    document.getElementById('comment-count').textContent = data.comments;
+                    document.getElementById('topic-count').textContent = data.topics;
+                } catch (error) {
+                    console.error('加载统计数据失败:', error);
+                }
+            }
+
+            // 检查后端状态
+            async function checkBackendStatus() {
+                try {
+                    const response = await fetch('http://localhost:3000/health');
+                    const data = await response.json();
+                    
+                    if (data.status === 'ok') {
+                        document.getElementById('backend-status').textContent = '运行中';
+                        document.getElementById('backend-status').className = 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium';
+                        
+                        // 如果后端正常，加载数据
+                        loadPosts();
+                        loadTopics();
+                        updateStats();
+                    }
+                } catch (error) {
+                    document.getElementById('backend-status').textContent = '未连接';
+                    document.getElementById('backend-status').className = 'bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium';
+                }
+            }
+
+            // 初始加载
+            checkBackendStatus();
+
+            // 登录按钮功能
+            document.getElementById('login-btn').addEventListener('click', async function() {
+                try {
+                    // 使用测试账户自动登录
+                    const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: 'test_user',
+                            password: 'test123'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        alert(`登录成功！欢迎 ${data.user.username}（${data.user.membershipLevel}会员）`);
+                        this.innerHTML = `<i class="fas fa-user-circle mr-2"></i>${data.user.username}`;
+                    } else {
+                        alert('登录失败：' + data.message);
+                    }
+                } catch (error) {
+                    alert('登录请求失败，请检查后端服务');
+                }
+            });
+
+            // 定时更新数据
+            setInterval(() => {
+                checkBackendStatus();
+            }, 30000); // 每30秒检查一次
+        });
+    </script>
+</body>
+</html>

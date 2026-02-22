@@ -1,0 +1,50 @@
+{
+  "name": "minilove-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MiniLove 前端应用 - 情感支持社区",
+  "author": "啊涯 & AI架构师",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "vue": "^3.4.21",
+    "vue-router": "^4.2.5",
+    "pinia": "^2.1.7",
+    "axios": "^1.6.7",
+    "@vueuse/core": "^10.7.2",
+    "socket.io-client": "^4.7.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/tsconfig": "^0.5.1",
+    "typescript": "^5.3.3",
+    "vue-tsc": "^1.8.27",
+    "vite": "^5.1.1",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.19.2",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

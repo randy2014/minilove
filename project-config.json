@@ -1,0 +1,67 @@
+{
+  "project": {
+    "name": "MiniLove",
+    "chineseName": "情感支持社区",
+    "description": "面向18-45岁男性的图文+H5情感支持应用",
+    "version": "0.1.0",
+    "status": "development"
+  },
+  "targetUsers": {
+    "ageRange": "18-45",
+    "gender": "male",
+    "location": ["一线城市", "二线城市", "三线城市"],
+    "occupation": "通用",
+    "usageTime": "18:00~04:00",
+    "corePainPoints": ["缺乏目标", "不知道该做什么", "单身"],
+    "coreGoal": "提供情感支持"
+  },
+  "technicalStack": {
+    "frontend": {
+      "framework": "Vue 3",
+      "buildTool": "Vite",
+      "uiFramework": "Tailwind CSS",
+      "stateManagement": "Pinia",
+      "pwa": true
+    },
+    "backend": {
+      "runtime": "Node.js 18+",
+      "framework": "Express.js",
+      "database": "PostgreSQL",
+      "cache": "Redis",
+      "storage": "对象存储"
+    },
+    "deployment": {
+      "environment": "云服务器",
+      "container": "Docker",
+      "webServer": "Nginx",
+      "processManager": "PM2"
+    }
+  },
+  "businessModel": {
+    "revenueModel": "会员制",
+    "tiers": {
+      "free": "基础内容浏览、有限互动",
+      "basic": "专属内容、基础社交功能",
+      "premium": "个性化服务、一对一咨询"
+    },
+    "pricingStrategy": "月度订阅为主"
+  },
+  "developmentPlan": {
+    "phase1": "MVP核心功能 (6-8周)",
+    "phase2": "情感支持工具 (4-6周)",
+    "phase3": "社交生态建设 (8-10周)",
+    "currentPhase": "phase1"
+  },
+  "team": {
+    "productOwner": "啊涯",
+    "aiArchitect": "AI架构师",
+    "developers": "待招募",
+    "designer": "待招募"
+  },
+  "timeline": {
+    "startDate": "2026-02-22",
+    "mvpTarget": "2026-04-15",
+    "betaRelease": "2026-05-01",
+    "officialLaunch": "2026-06-01"
+  }
+}
