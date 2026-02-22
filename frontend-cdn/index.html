@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniLove - 情感支持社区 (CDN版本)</title>
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- 图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- 样式 -->
+  <style>
+    /* 全局样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    #app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* 按钮样式 */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #667eea;
+      color: #667eea;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    /* 卡片样式 */
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    /* 状态指示器 */
+    .status-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-online {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+    
+    .status-offline {
+      background: #ef4444;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      #app {
+        padding: 15px;
+      }
+      
+      .btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  
+  <script type="module">
+    const { createApp, ref, onMounted } = Vue
+    
+    createApp({
+      setup() {
+        // 响应式数据
+        const apiStatus = ref(false)
+        const loading = ref(false)
+        const testResult = ref('')
+        const showLogin = ref(false)
+        const loginForm = ref({
+          username: '',
+          password: ''
+        })
+        
+        // 检查API状态
+        const checkApiStatus = async () => {
+          try {
+            const response = await fetch('http://localhost:3000/health')
+            apiStatus.value = response.ok
+          } catch (error) {
+            apiStatus.value = false
+          }
+        }
+        
+        // 测试登录API
+        const testLogin = async () => {
+          loading.value = true
+          try {
+            const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                username: 'test_user',
+                password: 'test123'
+              })
+            })
+            
+            const data = await response.json()
+            testResult.value = JSON.stringify(data, null, 2)
+            
+            if (data.token) {
+              alert('✅ 登录成功！Token已获取')
+            }
+          } catch (error) {
+            testResult.value = `错误: ${error.message}`
+            alert('❌ API连接失败')
+          } finally {
+            loading.value = false
+          }
+        }
+        
+        // 处理登录
+        const handleLogin = async () => {
+          try {
+            const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(loginForm.value)
+            })
+            
+            const data = await response.json()
+            if (data.token) {
+              alert('登录成功！')
+              showLogin.value = false
+              loginForm.value = { username: '', password: '' }
+            } else {
+              alert('登录失败：' + (data.error || '未知错误'))
+            }
+          } catch (error) {
+            alert('登录出错：' + error.message)
+          }
+        }
+        
+        // 打开API文档
+        const openApiDocs = () => {
+          window.open('http://localhost:3000/api-docs', '_blank')
+        }
+        
+        // 生命周期钩子
+        onMounted(() => {
+          checkApiStatus()
+        })
+        
+        return {
+          apiStatus,
+          loading,
+          testResult,
+          showLogin,
+          loginForm,
+          checkApiStatus,
+          testLogin,
+          handleLogin,
+          openApiDocs
+        }
+      },
+      
+      template: `
+        <div>
+          <!-- 导航栏 -->
+          <nav style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 0 0 15px 15px; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: bold;">
+                <span>❤️</span>
+                <span>MiniLove</span>
+                <span style="font-size: 14px; background: rgba(255,255,255,0.2); padding: 2px 10px; border-radius: 12px;">
+                  情感支持社区
+                </span>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button @click="showLogin = !showLogin" class="btn btn-primary">
+                  登录
+                </button>
+                <button @click="openApiDocs" class="btn btn-secondary">
+                  API文档
+                </button>
+              </div>
+            </div>
+          </nav>
+          
+          <!-- 主内容 -->
+          <main>
+            <!-- 英雄区域 -->
+            <div class="card" style="text-align: center; margin-bottom: 40px;">
+              <h1 style="font-size: 36px; margin-bottom: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                找到属于你的情感支持
+              </h1>
+              <p style="font-size: 18px; color: #666; margin-bottom: 30px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                专为18-45岁男性设计，在晚间时段(18:00~04:00)提供情感支持、目标引导和社交连接。
+              </p>
+              <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+                <button @click="testLogin" class="btn btn-primary" style="padding: 15px 30px; font-size: 18px;">
+                  <span v-if="loading">测试中...</span>
+                  <span v-else>测试API连接</span>
+                </button>
+                <button @click="openApiDocs" class="btn btn-outline" style="padding: 15px 30px; font-size: 18px;">
+                  查看API文档
+                </button>
+              </div>
+            </div>
+            
+            <!-- 系统状态 -->
+            <div class="card" style="margin-bottom: 30px;">
+              <h2 style="margin-bottom: 20px;">系统状态</h2>
+              <div style="margin-bottom: 20px;">
+                <span class="status-dot" :class="apiStatus ? 'status-online' : 'status-offline'"></span>
+                <strong>后端API服务:</strong> {{ apiStatus ? '运行中' : '未连接' }}
+                <br>
+                <small style="color: #666;">http://localhost:3000</small>
+              </div>
+              
+              <div v-if="testResult" style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <h3 style="margin-bottom: 10px;">测试结果</h3>
+                <pre style="white-space: pre-wrap; word-wrap: break-word; font-size: 14px; margin: 0;">{{ testResult }}</pre>
+              </div>
+            </div>
+            
+            <!-- 功能模块 -->
+            <div class="card" style="margin-bottom: 30px;">
+              <h2 style="text-align: center; margin-bottom: 40px;">核心功能</h2>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div style="background: white; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+                  <div style="font-size: 48px; margin-bottom: 20px;">💬</div>
+                  <h3 style="margin-bottom: 15px;">情感倾诉</h3>
+                  <p style="color: #666; line-height: 1.6;">匿名分享你的心情，获得社区支持和共鸣</p>
+                </div>
+                <div style="background: white; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+                  <div style="font-size: 48px; margin-bottom: 20px;">🌙</div>
+                  <h3 style="margin-bottom: 15px;">晚间社群</h3>
+                  <p style="color: #666; line-height: 1.6;">18:00-04:00专属活动，夜间不再孤单</p>
+                </div>
+                <div style="background: white; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+                  <div style="font-size: 48px; margin-bottom: 20px;">🎯</div>
+                  <h3 style="margin-bottom: 15px;">目标引导</h3>
+                  <p style="color: #666; line-height: 1.6;">会员专属目标规划，逐步找到人生方向</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 测试账户 -->
+            <div class="card">
+              <h2 style="margin-bottom: 20px;">测试账户</h2>
+              <div style="background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%); border-radius: 15px; padding: 30px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; font-family: monospace; font-size: 16px;">
+                  <div><strong>用户名:</strong> test_user</div>
+                  <div><strong>密码:</strong> test123</div>
+                  <div><strong>会员等级:</strong> 免费会员</div>
+                </div>
+              </div>
+            </div>
+          </main>
+          
+          <!-- 页脚 -->
+          <footer style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 40px 0; text-align: center; margin-top: 60px; border-radius: 15px 15px 0 0;">
+            <div>
+              <p>© 2026 MiniLove项目 · 版本 v0.1.0-beta</p>
+              <p>为你的情感之旅点亮光芒</p>
+            </div>
+          </footer>
+          
+          <!-- 登录模态框 -->
+          <div v-if="showLogin" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+            <div style="background: white; border-radius: 15px; padding: 40px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+              <h3 style="margin-bottom: 30px; text-align: center;">登录</h3>
+              <form @submit.prevent="handleLogin">
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; margin-bottom: 8px; font-weight: bold;">用户名</label>
+                  <input v-model="loginForm.username" type="text" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; margin-bottom: 8px; font-weight: bold;">密码</label>
+                  <input v-model="loginForm.password" type="password" required style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;">
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                  <button type="submit" class="btn btn-primary" style="flex: 1;">登录</button>
+                  <button @click="showLogin = false" type="button" class="btn btn-outline" style="flex: 1;">取消</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      `
+    }).mount('#app')
+  </script>
+</body>
+</html>
